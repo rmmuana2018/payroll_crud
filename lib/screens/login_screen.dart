@@ -42,7 +42,8 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (context) {
                 return AlertDialog(
                   title: const Text("Login Failed"),
-                  content: Text(state.error),
+                  // content: Text(state.error),
+                  content: Text('Incorrect email/password'),
                   actions: [
                     TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))
                   ],
