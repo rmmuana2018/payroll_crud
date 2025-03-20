@@ -58,9 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.lock, size: 100),
+                    const Icon(Icons.monetization_on_outlined, size: 100),
                     const SizedBox(height: 25),
-                    Text('Welcome guest!', style: TextStyle(color: Colors.grey[700], fontSize: 35, fontWeight: FontWeight.bold)),
+                    Text('Welcome to Payroll', style: TextStyle(color: Colors.grey[700], fontSize: 35, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 25),
                     MyTextField(controller: emailController, hintText: 'Email', obscureText: false),
                     const SizedBox(height: 10),

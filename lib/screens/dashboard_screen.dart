@@ -134,37 +134,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _deleteEmployee(BuildContext context, int id) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Confirm Deletion"),
-        content: const Text("Are you sure you want to delete this employee?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context), // Cancel deletion
-            child: const Text("Cancel"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Confirm Deletion"),
+            content: const Text("Are you sure you want to delete this employee?"),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+              TextButton(
+                onPressed: () async {
+                  await EmployeeDatabase.deleteEmployee(id);
+                  _loadEmployees();
+                  Navigator.pop(context);
+                },
+                child: const Text("Delete", style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              await EmployeeDatabase.deleteEmployee(id);
-              _loadEmployees();
-              Navigator.pop(context); // Close the dialog after deletion
-            },
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Employees', style: TextStyle(color: Color(0xffffffff))), backgroundColor: Color(0xFFFF9000),actions: [
-        IconButton(
-          icon: const Icon(Icons.logout, color: Color(0xffffffff)),
-          onPressed: ()=>_logout(context),
-        ),
-      ],),
+      backgroundColor: Colors.grey[300],
+      appBar: AppBar(
+        title: Text('Employees', style: TextStyle(color: Color(0xffffffff))),
+        backgroundColor: Color(0xFFFF9000),
+        actions: [IconButton(icon: const Icon(Icons.logout, color: Color(0xffffffff)), onPressed: () => _logout(context))],
+      ),
       body: Column(
         children: [
           Padding(
@@ -196,7 +193,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () => _showEmployeeDialog(context), child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showEmployeeDialog(context),
+        backgroundColor: Colors.black,
+        child: const Icon(Icons.add, color: Color(0xffffffff)),
+      ),
     );
   }
 }
