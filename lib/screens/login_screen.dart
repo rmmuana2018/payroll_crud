@@ -15,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool showPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthLoading) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) => const Center(child: CircularProgressIndicator()),
-            );
+            showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator()));
           } else {
             Navigator.pop(context);
           }
@@ -44,9 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   title: const Text("Login Failed"),
                   // content: Text(state.error),
                   content: Text('Incorrect email/password'),
-                  actions: [
-                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))
-                  ],
+                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK"))],
                 );
               },
             );
@@ -65,23 +60,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 25),
                     MyTextField(controller: emailController, hintText: 'Email', obscureText: false),
                     const SizedBox(height: 10),
-                    MyTextField(controller: passwordController, hintText: 'Password', obscureText: true),
+                    MyTextField(
+                      controller: passwordController,
+                      hintText: 'Password',
+                      obscureText: true,
+                      showPassword: showPassword,
+                      onToggle: () => setState(() => showPassword = !showPassword),
+                    ),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [Text('Forgot Password?', style: TextStyle(color: Colors.grey[600]))]),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [Text('Forgot Password?', style: TextStyle(color: Colors.grey[600]))],
+                      ),
                     ),
                     const SizedBox(height: 25),
-                    MyButton(
-                      text: 'Sign In',
-                      onTap: () => context.read<AuthCubit>().login(emailController.text, passwordController.text),
-                    ),
-                    const SizedBox(height: 25),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Row(children: [Expanded(child: Divider(thickness: 0.5, color: Colors.grey[400]))]),
-                    ),
-                    const SizedBox(height: 20),
+                    MyButton(text: 'Sign In', onTap: () => context.read<AuthCubit>().login(emailController.text, passwordController.text)),
+                    const SizedBox(height: 60),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
