@@ -31,7 +31,11 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
+#/build/
+build/*
+!build/web/
+.packages
+flutter_export_environment.sh
 
 # Symbolication related
 app.*.symbols
@@ -43,3 +47,18 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android specific
+android/.gradle/
+android/app/debug
+android/app/profile
+android/app/release
+android/build/
+
+# iOS specific
+ios/Flutter/Flutter.framework
+ios/Flutter/App.framework
+ios/Flutter/Generated.xcconfig
+
+# for fvm setup
+.fvm/
