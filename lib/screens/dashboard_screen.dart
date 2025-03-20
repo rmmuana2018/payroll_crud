@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+import 'login_screen.dart';
+
 class Employee {
   int? id;
   String name;
@@ -29,8 +31,7 @@ class EmployeeDatabase {
       path,
       version: 1,
       onCreate: (db, version) async {
-        await db.execute(
-            "CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, hourlyRate REAL)");
+        await db.execute("CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, hourlyRate REAL)");
       },
     );
   }
@@ -48,11 +49,7 @@ class EmployeeDatabase {
       whereArgs: query.isNotEmpty ? ['%$query%'] : null,
     );
     return List.generate(maps.length, (i) {
-      return Employee(
-        id: maps[i]['id'],
-        name: maps[i]['name'],
-        hourlyRate: maps[i]['hourlyRate'],
-      );
+      return Employee(id: maps[i]['id'], name: maps[i]['name'], hourlyRate: maps[i]['hourlyRate']);
     });
   }
 
@@ -89,50 +86,85 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() => employees = data);
   }
 
+  void _logout(BuildContext context) {
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+  }
+
   void _showEmployeeDialog(BuildContext context, {Employee? employee}) {
     final nameController = TextEditingController(text: employee?.name);
     final rateController = TextEditingController(text: employee?.hourlyRate.toString());
     showDialog(
       context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(employee == null ? 'Add Employee' : 'Edit Employee'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(controller: nameController, decoration: InputDecoration(labelText: 'Name')),
+                TextField(controller: rateController, decoration: InputDecoration(labelText: 'Hourly Rate'), keyboardType: TextInputType.number),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  if (nameController.text.isNotEmpty && rateController.text.isNotEmpty) {
+                    final newEmployee = Employee(
+                      id: employee?.id,
+                      name: nameController.text,
+                      hourlyRate: double.tryParse(rateController.text) ?? 0.0,
+                    );
+                    employee == null ? await EmployeeDatabase.insertEmployee(newEmployee) : await EmployeeDatabase.updateEmployee(newEmployee);
+                    _loadEmployees();
+                  }
+                  Navigator.pop(context);
+                },
+                child: Text(employee == null ? 'Add' : 'Update'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // void _deleteEmployee(int id) async {
+  //   await EmployeeDatabase.deleteEmployee(id);
+  //   _loadEmployees();
+  // }
+
+  void _deleteEmployee(BuildContext context, int id) {
+    showDialog(
+      context: context,
       builder: (context) => AlertDialog(
-        title: Text(employee == null ? 'Add Employee' : 'Edit Employee'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(controller: nameController, decoration: InputDecoration(labelText: 'Name')),
-            TextField(controller: rateController, decoration: InputDecoration(labelText: 'Hourly Rate'), keyboardType: TextInputType.number),
-          ],
-        ),
+        title: const Text("Confirm Deletion"),
+        content: const Text("Are you sure you want to delete this employee?"),
         actions: [
           TextButton(
+            onPressed: () => Navigator.pop(context), // Cancel deletion
+            child: const Text("Cancel"),
+          ),
+          TextButton(
             onPressed: () async {
-              if (nameController.text.isNotEmpty && rateController.text.isNotEmpty) {
-                final newEmployee = Employee(
-                  id: employee?.id,
-                  name: nameController.text,
-                  hourlyRate: double.tryParse(rateController.text) ?? 0.0,
-                );
-                employee == null ? await EmployeeDatabase.insertEmployee(newEmployee) : await EmployeeDatabase.updateEmployee(newEmployee);
-                _loadEmployees();
-              }
-              Navigator.pop(context);
+              await EmployeeDatabase.deleteEmployee(id);
+              _loadEmployees();
+              Navigator.pop(context); // Close the dialog after deletion
             },
-            child: Text(employee == null ? 'Add' : 'Update'),
-          )
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+          ),
         ],
       ),
     );
   }
 
-  void _deleteEmployee(int id) async {
-    await EmployeeDatabase.deleteEmployee(id);
-    _loadEmployees();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Employees')),
+      appBar: AppBar(title: Text('Employees', style: TextStyle(color: Color(0xffffffff))), backgroundColor: Color(0xFFFF9000),actions: [
+        IconButton(
+          icon: const Icon(Icons.logout, color: Color(0xffffffff)),
+          onPressed: ()=>_logout(context),
+        ),
+      ],),
       body: Column(
         children: [
           Padding(
@@ -154,8 +186,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(icon: const Icon(Icons.edit), onPressed: () => _showEmployeeDialog(context,employee: employee)),
-                      IconButton(icon: const Icon(Icons.delete), onPressed: () => _deleteEmployee(employee.id!)),
+                      IconButton(icon: const Icon(Icons.edit), onPressed: () => _showEmployeeDialog(context, employee: employee)),
+                      IconButton(icon: const Icon(Icons.delete), onPressed: () => _deleteEmployee(context, employee.id!)),
                     ],
                   ),
                 );
@@ -164,10 +196,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showEmployeeDialog(context),
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: FloatingActionButton(onPressed: () => _showEmployeeDialog(context), child: const Icon(Icons.add)),
     );
   }
 }
