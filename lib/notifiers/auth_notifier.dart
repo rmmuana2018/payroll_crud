@@ -1,31 +1,37 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../services/api_service.dart';
 
+part 'auth_notifier.g.dart';
+
+/// Define your auth states.
 abstract class AuthState {}
 
 class AuthInitial extends AuthState {}
+
 class AuthLoading extends AuthState {}
+
 class AuthSuccess extends AuthState {
   final String token;
   AuthSuccess(this.token);
 }
+
 class AuthFailure extends AuthState {
   final String error;
   AuthFailure(this.error);
 }
 
-class AuthCubit extends Cubit<AuthState> {
-  final ApiService apiService;
-
-  AuthCubit(this.apiService) : super(AuthInitial());
+@riverpod
+class AuthNotifier extends _$AuthNotifier {
+  @override
+  AuthState build() => AuthInitial();
 
   Future<void> login(String email, String password) async {
-    emit(AuthLoading());
+    state = AuthLoading();
     try {
-      final response = await apiService.login(email, password);
-      emit(AuthSuccess(response['token']));
+      final response = await AuthApi().login(email, password);
+      state = AuthSuccess(response['token']);
     } catch (e) {
-      emit(AuthFailure(e.toString()));
+      state = AuthFailure(e.toString());
     }
   }
 }
