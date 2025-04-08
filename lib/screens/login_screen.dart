@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/auth_cubit.dart';
 import 'dashboard_screen.dart';
-import '../components/my_button.dart';
-import '../components/my_textfield.dart';
+import '../components/buttons/custom_button.dart';
+import '../components/text_fields/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,8 +13,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final emailController = TextEditingController(text: 'cabic60931@onlcool.com');
+  final passwordController = TextEditingController(text: 'E4ts&4H-');
   bool showPassword = false;
 
   @override
@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: BlocConsumer<AuthCubit, AuthState>(
-        listener: (context, state) {
+        listener: (_, state) {
           if (state is AuthLoading) {
             showDialog(context: context, barrierDismissible: false, builder: (context) => const Center(child: CircularProgressIndicator()));
           } else {
@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         },
-        builder: (context, state) {
+        builder: (_, __) {
           return SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -58,9 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 25),
                     Text('Welcome to Payroll', style: TextStyle(color: Colors.grey[700], fontSize: 35, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 25),
-                    MyTextField(controller: emailController, hintText: 'Email', obscureText: false),
+                    CustomTextField(controller: emailController, hintText: 'Email', obscureText: false),
                     const SizedBox(height: 10),
-                    MyTextField(
+                    CustomTextField(
                       controller: passwordController,
                       hintText: 'Password',
                       obscureText: true,
@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 25),
-                    MyButton(text: 'Sign In', onTap: () => context.read<AuthCubit>().login(emailController.text, passwordController.text)),
+                    CustomButton(text: 'Sign In', onTap: () => context.read<AuthCubit>().login(emailController.text, passwordController.text), fontSize: 18),
                     const SizedBox(height: 60),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

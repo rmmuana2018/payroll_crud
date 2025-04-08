@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MyTextField extends StatelessWidget {
+class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
   final bool obscureText;
   final bool? showPassword;
   final VoidCallback? onToggle;
 
-  const MyTextField({super.key, required this.controller, required this.hintText, required this.obscureText, this.showPassword, this.onToggle});
+  const CustomTextField({super.key, required this.controller, required this.hintText, required this.obscureText, this.showPassword, this.onToggle});
 
   @override
   Widget build(BuildContext context) {

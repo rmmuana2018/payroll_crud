@@ -1,52 +1,28 @@
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
-
+import 'package:hive_flutter/hive_flutter.dart';
 import '../models/employee.dart';
 
 class EmployeeDatabase {
-  static Database? _database;
+  static final _employeeBox = Hive.box<Employee>('employees');
 
-  static Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await initDB();
-    return _database!;
-  }
-
-  static Future<Database> initDB() async {
-    String path = join(await getDatabasesPath(), 'employees.db');
-    return openDatabase(
-      path,
-      version: 1,
-      onCreate: (db, version) async {
-        await db.execute("CREATE TABLE employees(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, hourlyRate REAL)");
-      },
-    );
+  static List<Employee> getEmployees({String query = ""}) {
+    final allEmployees = _employeeBox.values.toList();
+    if (query.isEmpty) return allEmployees;
+    return allEmployees.where((e)=>e.name.toLowerCase().contains(query.toLowerCase())).toList();
   }
 
   static Future<void> insertEmployee(Employee employee) async {
-    final db = await database;
-    await db.insert('employees', employee.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
-  }
-
-  static Future<List<Employee>> getEmployees({String query = ""}) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'employees',
-      where: query.isNotEmpty ? 'name LIKE ?' : null,
-      whereArgs: query.isNotEmpty ? ['%$query%'] : null,
-    );
-    return List.generate(maps.length, (i) {
-      return Employee(id: maps[i]['id'], name: maps[i]['name'], hourlyRate: maps[i]['hourlyRate']);
-    });
+    await _employeeBox.add(employee);
   }
 
   static Future<void> updateEmployee(Employee employee) async {
-    final db = await database;
-    await db.update('employees', employee.toMap(), where: 'id = ?', whereArgs: [employee.id]);
+    await employee.save();
   }
 
-  static Future<void> deleteEmployee(int id) async {
-    final db = await database;
-    await db.delete('employees', where: 'id = ?', whereArgs: [id]);
+  static Future<void> deleteEmployee(Employee employee) async {
+    await employee.delete();
+  }
+
+  static Future<void> clearAll() async {
+    await _employeeBox.clear();
   }
 }
