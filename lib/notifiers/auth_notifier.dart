@@ -1,37 +1,29 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../services/api_service.dart';
+import '../api_services/auth_api.dart';
+import '../states/auth_state.dart';
 
 part 'auth_notifier.g.dart';
-
-/// Define your auth states.
-abstract class AuthState {}
-
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthSuccess extends AuthState {
-  final String token;
-  AuthSuccess(this.token);
-}
-
-class AuthFailure extends AuthState {
-  final String error;
-  AuthFailure(this.error);
-}
 
 @riverpod
 class AuthNotifier extends _$AuthNotifier {
   @override
-  AuthState build() => AuthInitial();
+  AuthState build() {
+    return const AuthState(status: AuthStatus.initial);
+  }
 
   Future<void> login(String email, String password) async {
-    state = AuthLoading();
+    state = state.copyWith(status: AuthStatus.loading);
     try {
       final response = await AuthApi().login(email, password);
-      state = AuthSuccess(response['token']);
+      state = state.copyWith(
+        status: AuthStatus.success,
+        token: response['token'],
+      );
     } catch (e) {
-      state = AuthFailure(e.toString());
+      state = state.copyWith(
+        status: AuthStatus.failure,
+        error: e.toString(),
+      );
     }
   }
 }

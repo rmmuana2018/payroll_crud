@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/employee.dart';
-import '../services/db_service.dart';
+import '../db_services/employee_database.dart';
 import 'login_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -20,7 +20,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadEmployees();
   }
 
-  void _loadEmployees({String query = ""}) async {
+  void _loadEmployees({String query = ""}) {
     final data = EmployeeDatabase.getEmployees(query: query);
     setState(() => employees = data);
   }
@@ -49,7 +49,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               if (nameController.text.isNotEmpty && rateController.text.isNotEmpty) {
                 if(employee == null){
                   final newEmployee = Employee(
-                    id: employee?.id,
                     name: nameController.text,
                     hourlyRate: double.tryParse(rateController.text) ?? 0.0,
                   );
@@ -75,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Confirm Deletion"),
-        content: const Text("Are you sure you want to delete this employee?"),
+        content: Text("Are you sure you want to delete ${employee.name} employee?"),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(
