@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:dynamic_path_url_strategy/dynamic_path_url_strategy.dart';
 import 'models/employee.dart';
 import 'router.dart';
 
@@ -12,7 +11,6 @@ void main() async {
   Hive.registerAdapter(EmployeeAdapter());
   await Hive.openBox('authBox');
   await Hive.openBox<Employee>('employees');
-  setPathUrlStrategy();
 
   runApp(const ProviderScope(child: MyApp()));
 }
