@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../states/auth_state.dart';
-import 'dashboard_screen.dart';
 import '../components/buttons/custom_button.dart';
 import '../components/text_fields/custom_text_field.dart';
 import '../notifiers/auth_notifier.dart';
@@ -19,6 +19,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool showPassword = false;
 
   @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authNotifierProvider, (previous, next) {
       if (next.status == AuthStatus.loading) {
@@ -28,7 +35,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
 
       if (next.status == AuthStatus.success) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
+        context.go('/home');
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const DashboardScreen()));
       }
 
       if (next.status == AuthStatus.failure) {

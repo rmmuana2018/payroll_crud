@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
+import 'package:test_ops/notifiers/auth_notifier.dart';
 import '../models/employee.dart';
 import '../db_services/employee_database.dart';
-import 'login_screen.dart';
 
-class DashboardScreen extends StatefulWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  State<DashboardScreen> createState() => _DashboardScreenState();
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   TextEditingController searchController = TextEditingController();
   List<Employee> employees = [];
 
@@ -20,13 +23,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadEmployees();
   }
 
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   void _loadEmployees({String query = ""}) {
     final data = EmployeeDatabase.getEmployees(query: query);
     setState(() => employees = data);
   }
 
-  void _logout(BuildContext context) {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+  void _logout() async {
+    var box = Hive.box('authBox');
+    await box.delete('authToken');
+    await box.delete('employee_id');
+    await box.delete('user_logged');
+    if (mounted) context.go('/login');
   }
 
   void _showEmployeeDialog(BuildContext context, {Employee? employee}) {
@@ -34,7 +47,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final rateController = TextEditingController(text: employee?.hourlyRate.toString());
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder:
+          (context) => AlertDialog(
         title: Text(employee == null ? 'Add Employee' : 'Edit Employee'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -47,11 +61,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           TextButton(
             onPressed: () async {
               if (nameController.text.isNotEmpty && rateController.text.isNotEmpty) {
-                if(employee == null){
-                  final newEmployee = Employee(
-                    name: nameController.text,
-                    hourlyRate: double.tryParse(rateController.text) ?? 0.0,
-                  );
+                if (employee == null) {
+                  final newEmployee = Employee(name: nameController.text, hourlyRate: double.tryParse(rateController.text) ?? 0.0);
                   await EmployeeDatabase.insertEmployee(newEmployee);
                 } else {
                   employee.name = nameController.text;
@@ -72,7 +83,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _deleteEmployee(BuildContext context, Employee employee) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder:
+          (_) => AlertDialog(
         title: const Text("Confirm Deletion"),
         content: Text("Are you sure you want to delete ${employee.name} employee?"),
         actions: [
@@ -95,9 +107,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: Text('Employees', style: TextStyle(color: Color(0xffffffff))),
-        backgroundColor: Color(0xFFFF9000),
-        actions: [IconButton(icon: const Icon(Icons.logout, color: Color(0xffffffff)), onPressed: () => _logout(context))],
+        title: const Text('Employees', style: TextStyle(color: Color(0xffffffff))),
+        backgroundColor: const Color(0xFFFF9000),
+        // actions: [IconButton(icon: const Icon(Icons.logout, color: Color(0xffffffff)), onPressed: () => _logout())],
+        actions: [
+          PopupMenuButton(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Center(child: Text(ref.read(authNotifierProvider.notifier).getEmployeeId(), style: const TextStyle(color: Colors.white, fontSize: 16))),
+            ),
+            itemBuilder:
+                (context) => <PopupMenuEntry<String>>[
+              PopupMenuItem(enabled: false, child: Text(ref.read(authNotifierProvider.notifier).getUserLogged())),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'logout',
+                child: Row(children: const [Icon(Icons.logout, color: Colors.red), SizedBox(width: 8), Text("Logout")]),
+              ),
+            ],
+            onSelected: (value) {
+              if (value == 'logout') {
+                _logout();
+              }
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
