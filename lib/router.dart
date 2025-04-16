@@ -9,7 +9,7 @@ final GoRouter router = GoRouter(
   refreshListenable: AuthChangeNotifier(),
   redirect: (context, state) {
     final bool loggedIn = Hive.box('authBox').containsKey('authToken');
-    final bool loggingIn = state.subloc == '/login';
+    final bool loggingIn = state.uri.path == '/login';
     if (!loggedIn) return loggingIn ? null : '/login';
     if (loggingIn) return '/home';
     return null;
