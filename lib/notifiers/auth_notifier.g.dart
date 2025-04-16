@@ -11,7 +11,7 @@ String _$authNotifierHash() => r'5815268aa7d100dd30910f0deba8fb1eacb2d9a1';
 /// See also [AuthNotifier].
 @ProviderFor(AuthNotifier)
 final authNotifierProvider =
-    AutoDisposeNotifierProvider<AuthNotifier, AuthState>.internal(
+    AutoDisposeNotifierProvider<AuthNotifier, AuthModel>.internal(
   AuthNotifier.new,
   name: r'authNotifierProvider',
   debugGetCreateSourceHash:
@@ -20,6 +20,6 @@ final authNotifierProvider =
   allTransitiveDependencies: null,
 );
 
-typedef _$AuthNotifier = AutoDisposeNotifier<AuthState>;
+typedef _$AuthNotifier = AutoDisposeNotifier<AuthModel>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

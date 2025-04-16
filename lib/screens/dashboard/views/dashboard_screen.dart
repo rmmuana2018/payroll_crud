@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
-import 'package:test_ops/notifiers/auth_notifier.dart';
-import '../models/employee.dart';
-import '../db_services/employee_database.dart';
+import '../../../models/employee.dart';
+import '../../../db_services/employee_database.dart';
+import '../../../notifiers/auth_notifier.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});

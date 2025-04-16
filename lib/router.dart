@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'screens/login_screen.dart';
-import 'screens/dashboard_screen.dart';
+import 'screens/login/views/login_screen.dart';
+import 'screens/dashboard/views/dashboard_screen.dart';
 
 final GoRouter router = GoRouter(
   initialLocation: '/login',

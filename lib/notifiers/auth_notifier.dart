@@ -1,15 +1,15 @@
 import 'package:hive/hive.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../api_services/auth_api.dart';
-import '../states/auth_state.dart';
+import '../screens/login/models/auth_model.dart';
 
 part 'auth_notifier.g.dart';
 
 @riverpod
 class AuthNotifier extends _$AuthNotifier {
   @override
-  AuthState build() {
-    return const AuthState(status: AuthStatus.initial);
+  AuthModel build() {
+    return const AuthModel(status: AuthStatus.initial);
   }
 
   Future<void> login(String email, String password) async {

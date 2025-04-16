@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../states/auth_state.dart';
-import '../components/buttons/custom_button.dart';
-import '../components/text_fields/custom_text_field.dart';
-import '../notifiers/auth_notifier.dart';
+import '../models/auth_model.dart';
+import '../../../components/buttons/custom_button.dart';
+import '../../../components/text_fields/custom_text_field.dart';
+import '../../../notifiers/auth_notifier.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -27,7 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen<AuthState>(authNotifierProvider, (previous, next) {
+    ref.listen<AuthModel>(authNotifierProvider, (previous, next) {
       if (next.status == AuthStatus.loading) {
         showDialog(context: context, barrierDismissible: false, builder: (_) => const Center(child: CircularProgressIndicator()));
       } else {
