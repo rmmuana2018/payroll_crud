@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
-import '../../../models/employee.dart';
+import '../models/employee_model.dart';
 import '../../../db_services/employee_database.dart';
-import '../../../notifiers/auth_notifier.dart';
+import '../../login/controllers/auth_notifier.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -15,7 +15,7 @@ class DashboardScreen extends ConsumerStatefulWidget {
 
 class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   TextEditingController searchController = TextEditingController();
-  List<Employee> employees = [];
+  List<EmployeeModel> employees = [];
 
   @override
   void initState() {
@@ -42,7 +42,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     if (mounted) context.go('/login');
   }
 
-  void _showEmployeeDialog(BuildContext context, {Employee? employee}) {
+  void _showEmployeeDialog(BuildContext context, {EmployeeModel? employee}) {
     final nameController = TextEditingController(text: employee?.name);
     final rateController = TextEditingController(text: employee?.hourlyRate.toString());
     showDialog(
@@ -62,7 +62,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             onPressed: () async {
               if (nameController.text.isNotEmpty && rateController.text.isNotEmpty) {
                 if (employee == null) {
-                  final newEmployee = Employee(name: nameController.text, hourlyRate: double.tryParse(rateController.text) ?? 0.0);
+                  final newEmployee = EmployeeModel(name: nameController.text, hourlyRate: double.tryParse(rateController.text) ?? 0.0);
                   await EmployeeDatabase.insertEmployee(newEmployee);
                 } else {
                   employee.name = nameController.text;
@@ -80,7 +80,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  void _deleteEmployee(BuildContext context, Employee employee) {
+  void _deleteEmployee(BuildContext context, EmployeeModel employee) {
     showDialog(
       context: context,
       builder:

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'models/employee.dart';
+import 'screens/dashboard/models/employee_model.dart';
 import 'router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
-  Hive.registerAdapter(EmployeeAdapter());
+  Hive.registerAdapter(EmployeeModelAdapter());
   await Hive.openBox('authBox');
-  await Hive.openBox<Employee>('employees');
+  await Hive.openBox<EmployeeModel>('employees');
 
   runApp(const ProviderScope(child: MyApp()));
 }

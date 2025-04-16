@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../api_services/auth_api.dart';
-import '../screens/login/models/auth_model.dart';
+import '../../../api_services/auth_api.dart';
+import '../models/auth_model.dart';
 
 part 'auth_notifier.g.dart';
 
