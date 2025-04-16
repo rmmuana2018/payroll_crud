@@ -26049,7 +26049,7 @@ A.ap3.prototype={
 $1(a){var s=A.ex().b
 if(s==null)s=null
 else{s=s.canvasKitBaseUrl
-if(s==null)s=null}return(s==null?"https://www.gstatic.com/flutter-canvaskit/18b71d647a292a980abb405ac7d16fe1f0b20434/":s)+a},
+if(s==null)s=null}return(s==null?"https://www.gstatic.com/flutter-canvaskit/cf56914b326edb0ccb123ffdc60f00060bd513fa/":s)+a},
 $S:54}
 A.ZM.prototype={
 dQ(a){B.d.ao(this.a.a.save())},
